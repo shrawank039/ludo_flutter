@@ -70,7 +70,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _movePiece(int diceRoll) {
     setState(() {
-      _currentPositionIndex = (_currentPositionIndex + 1) % path.length;
+      _currentPositionIndex = (_currentPositionIndex + diceRoll) % path.length;
     });
   }
 

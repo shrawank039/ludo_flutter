@@ -21,7 +21,7 @@ class MovablePiece extends StatelessWidget {
         width: MediaQuery.of(context).size.width / 15,
         height: MediaQuery.of(context).size.width / 15,
         child: Icon(
-          Icons.star,
+          Icons.incomplete_circle,
           color: color,
         ),
       ),
