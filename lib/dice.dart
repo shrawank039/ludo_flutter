@@ -1,40 +1,116 @@
-import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
 
-class Dice extends StatefulWidget {
+class DiceWidget extends StatefulWidget {
   final Function(int) onRoll;
 
-  const Dice({super.key, required this.onRoll});
+  const DiceWidget({required this.onRoll});
 
   @override
-  _DiceState createState() => _DiceState();
+  _DiceWidgetState createState() => _DiceWidgetState();
 }
 
-class _DiceState extends State<Dice> {
-  int _currentRoll = 1;
+class _DiceWidgetState extends State<DiceWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  final Random _random = Random();
+  int _diceNumber = 1;
 
-  void _rollDice() {
-    setState(() {
-      _currentRoll = Random().nextInt(6) + 1;
-      widget.onRoll(_currentRoll);
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    )..addListener(() {
+        setState(() {});
+      });
+
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.bounceOut);
+  }
+
+  void rollDice() {
+    _controller.forward(from: 0.0).then((_) {
+      setState(() {
+        _diceNumber = _random.nextInt(6) + 1;
+      });
+      widget.onRoll(_diceNumber);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          '$_currentRoll',
-          style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: rollDice,
+      child: Transform.rotate(
+        angle: _animation.value * pi * 5,
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.black, width: 2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: CustomPaint(
+            painter: DiceFacePainter(_diceNumber),
+          ),
         ),
-        const SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: _rollDice,
-          child: const Text('Roll Dice'),
-        ),
-      ],
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+class DiceFacePainter extends CustomPainter {
+  final int diceNumber;
+
+  DiceFacePainter(this.diceNumber);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.fill;
+
+    double dotSize = size.width / 5;
+    double dotRadius = dotSize / 2;
+
+    // Calculate positions for dots
+    List<Offset> dots = [];
+
+    if (diceNumber % 2 == 1) {
+      dots.add(Offset(size.width / 2, size.height / 2)); // center dot
+    }
+
+    if (diceNumber > 1) {
+      dots.add(Offset(size.width / 4, size.height / 4)); // top-left
+      dots.add(Offset(3 * size.width / 4, 3 * size.height / 4)); // bottom-right
+    }
+
+    if (diceNumber > 3) {
+      dots.add(Offset(3 * size.width / 4, size.height / 4)); // top-right
+      dots.add(Offset(size.width / 4, 3 * size.height / 4)); // bottom-left
+    }
+
+    if (diceNumber == 6) {
+      dots.add(Offset(size.width / 4, size.height / 2)); // middle-left
+      dots.add(Offset(3 * size.width / 4, size.height / 2)); // middle-right
+    }
+
+    for (var dot in dots) {
+      canvas.drawCircle(dot, dotRadius, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(DiceFacePainter oldDelegate) {
+    return oldDelegate.diceNumber != diceNumber;
   }
 }
