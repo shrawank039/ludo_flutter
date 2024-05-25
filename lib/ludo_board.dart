@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'dart:developer';
-
 import 'package:ludo_flutter/utils/constant.dart';
 
 class LudoBoard extends StatelessWidget {
@@ -57,7 +56,7 @@ class LudoBoard extends StatelessWidget {
     else if (row == 7 && col == 7) {
       return Colors.white;
     }
-    // center position
+    // center outer position
     else if (isCenterPosition) {
       return Colors.grey;
     }

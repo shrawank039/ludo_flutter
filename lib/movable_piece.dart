@@ -7,11 +7,13 @@ class MovablePiece extends ConsumerWidget {
 
   int? row;
   int? col;
+  final List<List<int>> path;
   Color? color;
 
    MovablePiece({
      this.row,
      this.col,
+     required this.path,
      this.color,
     super.key,
   });
