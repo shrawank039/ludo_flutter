@@ -1,39 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ludo_flutter/notifier/piece_notfier.dart';
-import 'package:ludo_flutter/utils/constant.dart';
+import 'package:ludo_flutter/models/piece.dart';
 
-class MovablePiece extends ConsumerWidget {
+class MovablePiece extends StatelessWidget {
+  final int row;
+  final int col;
+  final Piece piece;
+  final VoidCallback onTap;
 
-  int? row;
-  int? col;
-  final List<List<int>> path;
-  Color? color;
-
-   MovablePiece({
-     this.row,
-     this.col,
-     required this.path,
-     this.color,
+  const MovablePiece({
+    required this.row,
+    required this.col,
+    required this.piece,
+    required this.onTap,
     super.key,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    
-    final currentPositionIndex = ref.watch(diceProvider);
-    row = path[currentPositionIndex][0];
-    col = path[currentPositionIndex][1];
-
+  Widget build(BuildContext context) {
     return Positioned(
-      left: col! * MediaQuery.of(context).size.width / 15,
-      top: row! * MediaQuery.of(context).size.width / 15,
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width / 15,
-        height: MediaQuery.of(context).size.width / 15,
-        child: Icon(
-          Icons.incomplete_circle,
-          color: color,
+      left: col * MediaQuery.of(context).size.width / 15,
+      top: row * MediaQuery.of(context).size.width / 15,
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 15,
+          height: MediaQuery.of(context).size.width / 15,
+          child: Icon(
+            Icons.incomplete_circle_rounded,
+            color: piece.player == 0
+                ? Colors.red
+                : piece.player == 1
+                    ? Colors.green
+                    : piece.player == 2
+                        ? Colors.yellow
+                        : Colors.blue,
+          ),
         ),
       ),
     );
