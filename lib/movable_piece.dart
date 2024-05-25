@@ -5,12 +5,14 @@ class MovablePiece extends StatelessWidget {
   final int row;
   final int col;
   final Piece piece;
+  final Offset offset;
   final VoidCallback onTap;
 
   const MovablePiece({
     required this.row,
     required this.col,
     required this.piece,
+    required this.offset,
     required this.onTap,
     super.key,
   });
@@ -18,8 +20,8 @@ class MovablePiece extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: col * MediaQuery.of(context).size.width / 15,
-      top: row * MediaQuery.of(context).size.width / 15,
+      left: col * MediaQuery.of(context).size.width / 15 + offset.dx,
+      top: row * MediaQuery.of(context).size.width / 15 + offset.dy,
       child: GestureDetector(
         onTap: onTap,
         child: SizedBox(

@@ -78,24 +78,41 @@ class _GameScreenState extends ConsumerState<GameScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final pieces = ref.watch(piecesProvider);
+
+    // current player's pieces are on top
+    final sortedPieces = [
+      ...pieces.where((piece) => piece.player != currentPlayer),
+      ...pieces.where((piece) => piece.player == currentPlayer),
+    ];
 
     return Stack(
       children: [
         const LudoBoard(),
-        ...pieces.map((piece) {
+        ...sortedPieces.map((piece) {
           final position = paths[piece.player][piece.positionIndex];
+
+          final samePositionPieces = pieces
+              .where((p) =>
+                  p.player == currentPlayer &&
+                  p.positionIndex == piece.positionIndex)
+              .toList();
+          final offsetIndex =
+              samePositionPieces.indexWhere((p) => p.id == piece.id);
+
           return MovablePiece(
             row: position[0],
             col: position[1],
             piece: piece,
+            offset: Offset(0, offsetIndex * 2.0),
             onTap: () {
               if (piece.player == currentPlayer) {
                 _movePiece(piece.id, ref);
               }
             },
           );
-        }).toList(),
+        }),
         Positioned(
           bottom: 50,
           width: MediaQuery.of(context).size.width,
